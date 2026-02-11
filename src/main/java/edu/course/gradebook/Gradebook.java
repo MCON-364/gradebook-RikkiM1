@@ -7,7 +7,7 @@ public class Gradebook {
     private final Map<String, List<Integer>> gradesByStudent = new HashMap<>();
     private final Deque<UndoAction> undoStack = new ArrayDeque<>();
     private final LinkedList<String> activityLog = new LinkedList<>();
-    Gradebook gb = new Gradebook();
+    Gradebook gb;
 
     public Optional<List<Integer>> findStudentGrades(String name) {
         return Optional.ofNullable(gradesByStudent.get(name));
@@ -30,6 +30,7 @@ public class Gradebook {
             undoStack.push(new UndoAction() {
                 @Override
                 public void undo(Gradebook gradebook) {
+
                     gradesByStudent.get(name).remove(grade);
                 }
             });
