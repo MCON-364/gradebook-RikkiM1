@@ -7,6 +7,7 @@ public class Gradebook {
     private final Map<String, List<Integer>> gradesByStudent = new HashMap<>();
     private final Deque<UndoAction> undoStack = new ArrayDeque<>();
     private final LinkedList<String> activityLog = new LinkedList<>();
+    Gradebook gb = new Gradebook();
 
     public Optional<List<Integer>> findStudentGrades(String name) {
         return Optional.ofNullable(gradesByStudent.get(name));
@@ -29,7 +30,7 @@ public class Gradebook {
             undoStack.push(new UndoAction() {
                 @Override
                 public void undo(Gradebook gradebook) {
-
+                    gradesByStudent.get(name).remove(grade);
                 }
             });
 
@@ -46,6 +47,7 @@ public class Gradebook {
             undoStack.push(new UndoAction() {
                 @Override
                 public void undo(Gradebook gradebook) {
+                    gradesByStudent.put(name, new ArrayList<>());
                 }
             });
             activityLog.push("removed student " + name);
@@ -56,45 +58,65 @@ public class Gradebook {
 
     public Optional<Double> averageFor(String name) {
         double grade = 0;
+
+        List<Integer> grades = gradesByStudent.get(name);
         if (gradesByStudent.containsKey(name)) {
-            for (String student : gradesByStudent.keySet()) {
-                grade += gradesByStudent.get(student).get((int) grade);
+            for (Integer student : grades) {
+                grade += student;
             }
 
-            grade /= gradesByStudent.size();
-            return Optional.ofNullable(grade);
+           double average= grade/grades.size();
+            return Optional.of(average);
         }
         return Optional.empty();
     }
 
-    public Optional<List<Integer>> letterGradeFor(String name) {
+    public Optional<Integer> letterGradeFor(String name) {
         if (gradesByStudent.containsKey(name)) {
-            var x = gradesByStudent.get(averageFor(name));
-            switch (x) {
-                case 90, 100 -> System.out.print("A");
-                case 80, 89 -> System.out.print("B");
-                case 70, 79 -> System.out.print("C");
-                case 60, 69 -> System.out.print("D");
-                default -> System.out.print("F");
+            Optional<Double> avg = gb.averageFor(name);
+            int x = avg.get().intValue();
 
-            }
-            System.out.println(": " + x);
-            return Optional.ofNullable(x);
+            String grade = switch (x) {
+                case 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100 -> "A";
+                case 80, 81, 82, 83, 84, 85, 86, 87, 88, 89 -> "B";
+                case 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 -> "C";
+                case 60, 61, 62, 63, 64, 65, 66, 67, 68, 69 -> "D";
+                default -> {
+                    System.out.println("you failed!");
+                    yield "F";
+                }
+            };
+            return Optional.of(grade.length());
         }
-
-
         return Optional.empty();
     }
 
-    public Optional<Double> classAverage()
-    {
+    public Optional<Double> classAverage() {
+        double grade = 0;
+        double cl = 0;
+        for (String s : gradesByStudent.keySet()) {
+            List<Integer> sg = gradesByStudent.get(s);
+            for (Integer student : sg) {
+                grade += student;
+                cl++;
+            }
+            double average = grade / cl;
+            return Optional.of(average);
+        }
+        return Optional.empty();
+    }
 
-    }
-    public boolean undo() {
-        throw new UnsupportedOperationException();
-    }
+        public boolean undo () {
+            if(undoStack.isEmpty()) {
+                return false;
+            }
+        UndoAction action =undoStack.pop();
+            action.undo(this);
+            activityLog.push("undo");
+            return true;
+        }
 
-    public List<String> recentLog(int maxItems) {
-        throw new UnsupportedOperationException();
+        public List<String> recentLog ( int maxItems){
+            throw new UnsupportedOperationException();
+        }
     }
-}
