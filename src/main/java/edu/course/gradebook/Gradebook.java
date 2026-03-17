@@ -73,24 +73,27 @@ public class Gradebook {
     }
 
     public Optional<Integer> letterGradeFor(String name) {
-        if (gradesByStudent.containsKey(name)) {
-            Optional<Double> avg = gb.averageFor(name);
+        if (!gradesByStudent.containsKey(name)) {
+            return Optional.empty();
+        }
+            Optional<Double> avg = averageFor(name);
             int x = avg.get().intValue();
 
-            String grade = switch (x) {
-                case 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100 -> "A";
-                case 80, 81, 82, 83, 84, 85, 86, 87, 88, 89 -> "B";
-                case 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 -> "C";
-                case 60, 61, 62, 63, 64, 65, 66, 67, 68, 69 -> "D";
-                default -> {
-                    System.out.println("you failed!");
-                    yield "F";
-                }
+            char grade = switch (x/10) {
+                case 10,9 -> 'A';
+                case 8-> 'B';
+                case 7 -> 'C';
+                case 6-> 'D';
+                default -> 'F';
             };
-            return Optional.of(grade.length());
-        }
-        return Optional.empty();
+        return Optional.of((int) grade);
+
     }
+
+
+
+
+
 
     public Optional<Double> classAverage() {
         double grade = 0;
