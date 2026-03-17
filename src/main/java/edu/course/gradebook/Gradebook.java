@@ -115,10 +115,20 @@ public class Gradebook {
                 return false;
             }
         UndoAction action =undoStack.pop();
-            action.undo(this);
-            activityLog.push("undo");
-            return true;
+            try {
+                action.undo(this); // make sure undo() safely handles empty lists or missing elements
+                activityLog.push("undo");
+                return true;
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("Undo failed: " + e.getMessage());
+                return false;
+            }
         }
+
+
+
+
+
 
         public List<String> recentLog ( int maxItems)
         {
