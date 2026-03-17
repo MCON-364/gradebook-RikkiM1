@@ -72,21 +72,21 @@ public class Gradebook {
         return Optional.empty();
     }
 
-    public Optional<Integer> letterGradeFor(String name) {
+    public Optional<String> letterGradeFor(String name) {
         if (!gradesByStudent.containsKey(name)) {
             return Optional.empty();
         }
             Optional<Double> avg = averageFor(name);
             int x = avg.get().intValue();
 
-            int grade = switch (x/10) {
-                case 10,9 -> 4;
-                case 8-> 3;
-                case 7 -> 2;
-                case 6-> 1;
-                default -> 0;
+            String grade = switch (x/10) {
+                case 10,9 -> "A";
+                case 8-> "B";
+                case 7 -> "C";
+                case 6-> "D";
+                default -> "F";
             };
-        return Optional.of( grade);
+        return Optional.of(grade);
 
     }
 
