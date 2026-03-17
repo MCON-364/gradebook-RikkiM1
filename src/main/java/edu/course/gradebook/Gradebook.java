@@ -79,14 +79,14 @@ public class Gradebook {
             Optional<Double> avg = averageFor(name);
             int x = avg.get().intValue();
 
-            char grade = switch (x/10) {
-                case 10,9 -> 'A';
-                case 8-> 'B';
-                case 7 -> 'C';
-                case 6-> 'D';
-                default -> 'F';
+            int grade = switch (x/10) {
+                case 10,9 -> 4;
+                case 8-> 3;
+                case 7 -> 2;
+                case 6-> 1;
+                default -> 0;
             };
-        return Optional.of((int) grade);
+        return Optional.of( grade);
 
     }
 
