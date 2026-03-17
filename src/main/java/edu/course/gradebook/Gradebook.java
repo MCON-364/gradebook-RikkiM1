@@ -117,7 +117,18 @@ public class Gradebook {
             return true;
         }
 
-        public List<String> recentLog ( int maxItems){
-            throw new UnsupportedOperationException();
+        public List<String> recentLog ( int maxItems)
+        {
+            List<String> result = new ArrayList<>();
+
+            int count = 0;
+            ListIterator<String> it = activityLog.listIterator(activityLog.size());
+
+            while (it.hasPrevious() && count < maxItems) {
+                result.add(it.previous());
+                count++;
+            }
+
+            return result;
         }
     }
