@@ -31,7 +31,7 @@ public class Gradebook {
                 @Override
                 public void undo(Gradebook gradebook) {
 
-                    gradesByStudent.get(name).remove(grade);
+                    gradesByStudent.get(name).remove(Integer.valueOf(grade));
                 }
             });
 
@@ -44,11 +44,12 @@ public class Gradebook {
 
     public boolean removeStudent(String name) {
         if (gradesByStudent.containsKey(name)) {
-            gradesByStudent.get(name).remove(name);
+            List<Integer> removedGrades = new ArrayList<>(gradesByStudent.get(name));
+            gradesByStudent.remove(name);
             undoStack.push(new UndoAction() {
                 @Override
                 public void undo(Gradebook gradebook) {
-                    gradesByStudent.put(name, new ArrayList<>());
+                    gradesByStudent.put(name,removedGrades);
                 }
             });
             activityLog.push("removed student " + name);
@@ -57,10 +58,15 @@ public class Gradebook {
         return false;
     }
 
+
+
+
+
     public Optional<Double> averageFor(String name) {
         double grade = 0;
 
         List<Integer> grades = gradesByStudent.get(name);
+        if (grades == null || grades.isEmpty()) return Optional.empty();
         if (gradesByStudent.containsKey(name)) {
             for (Integer student : grades) {
                 grade += student;
@@ -72,11 +78,12 @@ public class Gradebook {
         return Optional.empty();
     }
 
+
+
     public Optional<String> letterGradeFor(String name) {
-        if (!gradesByStudent.containsKey(name)) {
-            return Optional.empty();
-        }
+
             Optional<Double> avg = averageFor(name);
+        if (avg.isEmpty()) return Optional.empty();
             int x = avg.get().intValue();
 
             String grade = switch (x/10) {
@@ -95,20 +102,25 @@ public class Gradebook {
 
 
 
+
     public Optional<Double> classAverage() {
         double grade = 0;
         double cl = 0;
-        for (String s : gradesByStudent.keySet()) {
-            List<Integer> sg = gradesByStudent.get(s);
-            for (Integer student : sg) {
+        for (List<Integer> s : gradesByStudent.values()) {
+
+            for (Integer student : s) {
                 grade += student;
                 cl++;
             }
+        }
+        if (cl ==0 ) return Optional.empty();
             double average = grade / cl;
             return Optional.of(average);
-        }
-        return Optional.empty();
+
     }
+
+
+
 
         public boolean undo () {
             if(undoStack.isEmpty()) {
